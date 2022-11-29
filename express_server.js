@@ -28,11 +28,10 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  console.log(urlDatabase);
+  // console.log(urlDatabase);
   Object.assign(urlDatabase, req.body);
-  console.log(urlDatabase);
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
-
+  // console.log(urlDatabase);
+  res.redirect("/urls/:id"); // Respond with 'Ok' (we will replace this)
 
 });
 
@@ -48,7 +47,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-const longURL = "http://www.lighthouselabs.ca";
+const longURL = urlDatabase.longURL;
   res.redirect(longURL);
 });
 

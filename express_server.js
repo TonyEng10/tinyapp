@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
-function generateRandomString() {}
+let shortUrlId = Math.random().toString(36).substring(2, 8);
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -29,13 +29,17 @@ app.get("/urls", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
 delete urlDatabase["9sm5xK"];
 res.redirect("/urls");
-})
+});
 
 app.post("/urls", (req, res) => {
+  const newObj = {
+    [shortUrlId]: req.body.longURL,
+  }
   console.log(req.body); // Log the POST request body to the console
-  // console.log(urlDatabase);
-  Object.assign(urlDatabase, req.body);
-  // console.log(urlDatabase);
+  console.log(urlDatabase);
+  urlDatabase[shortUrlId] = req.body.longURL;
+  // Object.assign(urlDatabase, req.body);
+  console.log(urlDatabase);
   res.redirect("/urls/:id"); // Respond with 'Ok' (we will replace this)
 
 });
@@ -47,12 +51,12 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: "http://www.lighthouselabs.ca" };
+  const templateVars = { id: req.params.id, longURL: req.body.longURL };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-const longURL = urlDatabase.longURL;
+const longURL = urlDatabase[shortUrlId];
   res.redirect(longURL);
 });
 

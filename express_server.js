@@ -28,9 +28,14 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.redirect(`/urls/${id}`);
+  console.log(urlDatabase);
+  Object.assign(urlDatabase, req.body);
+  console.log(urlDatabase);
+  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+
 
 });
+
 
 
 app.get("/urls/new", (req, res) => {

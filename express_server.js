@@ -28,8 +28,10 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${id}`);
+
 });
+
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
@@ -38,6 +40,11 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: "http://www.lighthouselabs.ca" };
   res.render("urls_show", templateVars);
+});
+
+app.get("/u/:id", (req, res) => {
+const longURL = "http://www.lighthouselabs.ca";
+  res.redirect(longURL);
 });
 
 app.get("/hello", (req, res) => {

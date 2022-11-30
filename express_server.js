@@ -50,7 +50,7 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortUrlId] = req.body.longURL;
   // Object.assign(urlDatabase, req.body);
   // console.log(urlDatabase);
-  res.redirect(`/urls/${[shortUrlId]}`); // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${[shortUrlId]}`); 
 
 });
 
@@ -61,7 +61,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: req.body.longURL };
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
 });
 

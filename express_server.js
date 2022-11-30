@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
 
 let shortUrlId = Math.random().toString(36).substring(2, 8);
 
@@ -11,7 +12,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -26,18 +26,18 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.post(`/urls/${"b2xVn2"}/delete`, (req, res) => {
-delete urlDatabase["b2xVn2"];
-res.redirect("/urls");
-});
+// app.post(`/urls/${"b2xVn2"}/delete`, (req, res) => {
+// delete urlDatabase["b2xVn2"];
+// res.redirect("/urls");
+// });
 
-app.post(`/urls/${"9sm5xK"}/delete`, (req, res) => {
-delete urlDatabase["9sm5xK"];
-res.redirect("/urls");
-});
+// app.post(`/urls/${"9sm5xK"}/delete`, (req, res) => {
+// delete urlDatabase["9sm5xK"];
+// res.redirect("/urls");
+// });
 
-app.post(`/urls/${[shortUrlId]}/delete`, (req, res) => {
-delete urlDatabase[[shortUrlId]];
+app.post(`/urls/:id/delete`, (req, res) => {
+delete urlDatabase[req.params.id];
 res.redirect("/urls");
 });
 
@@ -50,7 +50,15 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortUrlId] = req.body.longURL;
   // Object.assign(urlDatabase, req.body);
   // console.log(urlDatabase);
-  res.redirect(`/urls/${[shortUrlId]}`); 
+  res.redirect(`/urls/${shortUrlId}`); 
+
+});
+app.post("/urls/:id", (req, res) => {
+  console.log(req.params);
+  console.log(req.body);
+  urlDatabase[req.params.id] = req.body.longURL;
+ 
+  res.redirect("/urls"); 
 
 });
 
@@ -61,6 +69,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  console.log(req.params);
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
 });

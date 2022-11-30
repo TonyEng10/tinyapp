@@ -14,6 +14,18 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -29,15 +41,12 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-// app.post(`/urls/${"b2xVn2"}/delete`, (req, res) => {
-// delete urlDatabase["b2xVn2"];
-// res.redirect("/urls");
-// });
+app.get("/register", (req, res) => {
 
-// app.post(`/urls/${"9sm5xK"}/delete`, (req, res) => {
-// delete urlDatabase["9sm5xK"];
-// res.redirect("/urls");
-// });
+  res.render("urls_register");
+});
+
+
 app.post("/login", (req, res) => {
 res.cookie("username", req.body.username);
 // console.log(req.body);
@@ -50,15 +59,9 @@ res.redirect("/urls");
 });
 
 app.post("/urls", (req, res) => {
-  // const newObj = {
-  //   [shortUrlId]: req.body.longURL,
-  // }
-  // console.log(req.body); // Log the POST request body to the console
   // console.log(urlDatabase);
   urlDatabase[shortUrlId] = req.body.longURL;
-  // Object.assign(urlDatabase, req.body);
   // console.log(urlDatabase);
-  // res.redirect(`/urls/${shortUrlId}`); 
   res.redirect(`/urls/${shortUrlId}`); 
 
 });
@@ -72,7 +75,6 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-
 res.clearCookie("username");
   res.redirect("/urls");
 });
@@ -93,15 +95,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// app.get(`/u/${[shortUrlId]}`, (req, res) => {
-// const longURL = urlDatabase[shortUrlId];
-//   res.redirect(longURL);
-// });
 
-// app.get(`/u/${[shortUrlId]}`, (req, res) => {
-// const longURL = urlDatabase[shortUrlId];
-//   res.redirect(longURL);
-// });
 app.get("/u/:id", (req, res) => {
   const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   const longURL = urlDatabase[req.params.id];

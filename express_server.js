@@ -38,7 +38,8 @@ app.get("/urls", (req, res) => {
 // res.redirect("/urls");
 // });
 app.post("/login", (req, res) => {
-res.cookie("username", "http://localhost:8080/login");
+res.cookie("username", req.body.username);
+console.log(req.body);
 res.redirect("/urls");
 });
 
@@ -76,7 +77,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  console.log(req.params);
+  // console.log(req.params);
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
 });
@@ -92,7 +93,7 @@ app.get("/urls/:id", (req, res) => {
 // });
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
-  console.log(longURL);
+  // console.log(longURL);
   res.redirect(longURL);
 });
 

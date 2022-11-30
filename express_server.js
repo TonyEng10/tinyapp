@@ -39,7 +39,7 @@ app.get("/urls", (req, res) => {
 // });
 app.post("/login", (req, res) => {
 res.cookie("username", req.body.username);
-console.log(req.body);
+// console.log(req.body);
 res.redirect("/urls");
 });
 

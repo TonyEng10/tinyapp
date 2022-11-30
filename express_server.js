@@ -32,15 +32,15 @@ res.redirect("/urls");
 });
 
 app.post("/urls", (req, res) => {
-  const newObj = {
-    [shortUrlId]: req.body.longURL,
-  }
-  console.log(req.body); // Log the POST request body to the console
-  console.log(urlDatabase);
+  // const newObj = {
+  //   [shortUrlId]: req.body.longURL,
+  // }
+  // console.log(req.body); // Log the POST request body to the console
+  // console.log(urlDatabase);
   urlDatabase[shortUrlId] = req.body.longURL;
   // Object.assign(urlDatabase, req.body);
-  console.log(urlDatabase);
-  res.redirect("/urls/:id"); // Respond with 'Ok' (we will replace this)
+  // console.log(urlDatabase);
+  res.redirect(`/urls/${[shortUrlId]}`); // Respond with 'Ok' (we will replace this)
 
 });
 
@@ -55,7 +55,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get("/u/:id", (req, res) => {
+app.get(`/u/${[shortUrlId]}`, (req, res) => {
 const longURL = urlDatabase[shortUrlId];
   res.redirect(longURL);
 });

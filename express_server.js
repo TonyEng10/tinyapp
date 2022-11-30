@@ -7,7 +7,8 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-let shortUrlId = Math.random().toString(36).substring(2, 8);
+let getshortUrlId = () => Math.random().toString(36).substring(2, 8);
+const getnewUserId = () => Math.random().toString(36).substring(2, 8);
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -37,7 +38,7 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
-  console.log(templateVars);
+  // console.log(templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -46,6 +47,19 @@ app.get("/register", (req, res) => {
   res.render("urls_register");
 });
 
+app.post("/register", (req, res) => {
+console.log(req.body);
+const newUserId = getnewUserId();
+const newUser = {
+  id: newUserId,
+    email: req.body.email,
+    password: req.body.password,
+}
+users[newUserId] = newUser;
+res.cookie("user_id", newUserId);
+console.log(users);
+  res.redirect("/urls");
+}) 
 
 app.post("/login", (req, res) => {
 res.cookie("username", req.body.username);
@@ -60,6 +74,7 @@ res.redirect("/urls");
 
 app.post("/urls", (req, res) => {
   // console.log(urlDatabase);
+  const shortUrlId = getshortUrlId();
   urlDatabase[shortUrlId] = req.body.longURL;
   // console.log(urlDatabase);
   res.redirect(`/urls/${shortUrlId}`); 

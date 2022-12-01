@@ -116,7 +116,11 @@ app.post(`/urls/:id/delete`, (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  // console.log(urlDatabase);
+  const userDetails = (users[req.cookies["user_id"]]);
+  if (!userDetails) {
+    return res.status(401).send("please register to access Create New URL")
+  }
+
   const shortUrlId = getshortUrlId();
   urlDatabase[shortUrlId] = req.body.longURL;
   // console.log(urlDatabase);
@@ -139,6 +143,10 @@ app.post("/logout", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
+  const userDetails = (users[req.cookies["user_id"]]);
+  if (!userDetails) {
+    return res.redirect("/login");
+  }
   res.render("urls_new", templateVars);
 });
 
@@ -155,6 +163,14 @@ app.get("/urls/:id", (req, res) => {
 
 
 app.get("/u/:id", (req, res) => {
+  const userDetails = users[req.cookies["user_id"]];
+  // console.log("typeof check", typeof userDetails);
+  console.log("check req params", req.params);
+  console.log("userDetails", userDetails);
+  if (req.params.id === "undefined") {
+    return res.status(404).send("short URL not found")
+  }
+  
   const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
   const longURL = urlDatabase[req.params.id];
   // console.log(longURL);

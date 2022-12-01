@@ -84,10 +84,13 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-
-
-  res.render("urls_login");
-})
+const userDetails = (users[req.cookies["user_id"]]);
+console.log(users);
+if (userDetails) {
+  return res.redirect("/urls");
+} else
+  return res.render("urls_login");
+});
 
 app.post("/login", (req, res) => {
 
@@ -162,4 +165,3 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-

@@ -51,22 +51,35 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-
+// const userId = req.cookies.user_id;
 const newUserId = getnewUserId();
+
+if (req.body.email === "" || req.body.password === "") {
+  return res.status(400).send("need to input email and password");
+}
+let foundUser = null;
+
+for (const userId in users) {
+  const user = users[userId];
+  if (user.email === req.body.email) {
+    foundUser = user;
+  }
+}
+
+if (foundUser) {
+  return res.status(400).send("user already exists");
+}
+  
+
+
 res.cookie("user_id", newUserId);
 const { email, password } = req.body;
 const user = { id: newUserId, email: req.body.email, password: req.body.password}
 users[newUserId] = user
-// const newUser = {
-//   id: newUserId,
-//     email: req.body.email,
-//     password: req.body.password,
-// }
-// users[newUserId] = newUser;
-// console.log(`user, ${user.}`);
-console.log(res.cookie);
+
+// console.log(res.cookie);
   res.redirect("/urls");
-}) 
+});
 
 app.post("/login", (req, res) => {
 res.cookie("username", req.body.username);

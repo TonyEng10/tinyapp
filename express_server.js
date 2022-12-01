@@ -81,6 +81,12 @@ users[newUserId] = user
   res.redirect("/urls");
 });
 
+app.get("/login", (req, res) => {
+  
+
+  res.render("urls_login");
+})
+
 app.post("/login", (req, res) => {
 res.cookie("username", req.body.username);
 // res.cookie("user_id", [newUserId]);

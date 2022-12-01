@@ -57,7 +57,11 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-
+  const userDetails = (users[req.cookies["user_id"]]);
+  // console.log(users);
+  if (userDetails) {
+    return res.redirect("/urls");
+  } else
   res.render("urls_register");
 });
 
@@ -85,7 +89,7 @@ app.post("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
 const userDetails = (users[req.cookies["user_id"]]);
-console.log(users);
+// console.log(users);
 if (userDetails) {
   return res.redirect("/urls");
 } else

@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const app = express();
 const PORT = 8080; // default port 8080
-const cookieParser =require('cookie-parser');
+const cookieParser = require('cookie-parser');
 
 app.set("view engine", "ejs");
 app.use(morgan("dev"));
@@ -12,6 +12,17 @@ app.use(cookieParser());
 
 let getshortUrlId = () => Math.random().toString(36).substring(2, 8);
 const getnewUserId = () => Math.random().toString(36).substring(2, 8);
+
+const getUserbyEmail = (email) => {
+  // let foundUser = null;
+
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      return user;
+    }
+  }
+}
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -51,52 +62,50 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-// const userId = req.cookies.user_id;
-const newUserId = getnewUserId();
+  // const userId = req.cookies.user_id;
+  const newUserId = getnewUserId();
 
-if (req.body.email === "" || req.body.password === "") {
-  return res.status(400).send("need to input email and password");
-}
-let foundUser = null;
-
-for (const userId in users) {
-  const user = users[userId];
-  if (user.email === req.body.email) {
-    foundUser = user;
+  if (req.body.email === "" || req.body.password === "") {
+    return res.status(400).send("need to input email and password");
   }
-}
 
-if (foundUser) {
-  return res.status(400).send("user already exists");
-}
-  
+  let foundUser = getUserbyEmail(req.body.email);
+  if (foundUser) {
+    return res.status(400).send("user already exists");
+  }
 
+  res.cookie("user_id", newUserId);
+  const { email, password } = req.body;
+  const user = { id: newUserId, email: req.body.email, password: req.body.password }
+  users[newUserId] = user
 
-res.cookie("user_id", newUserId);
-const { email, password } = req.body;
-const user = { id: newUserId, email: req.body.email, password: req.body.password}
-users[newUserId] = user
-
-// console.log(res.cookie);
+  // console.log(res.cookie);
   res.redirect("/urls");
 });
 
 app.get("/login", (req, res) => {
-  
+
 
   res.render("urls_login");
 })
 
 app.post("/login", (req, res) => {
-res.cookie("username", req.body.username);
-// res.cookie("user_id", [newUserId]);
-console.log(req.body);
-res.redirect("/urls");
+
+  let foundUser = getUserbyEmail(req.body.email);
+  if (foundUser) {
+    if (req.body.password !== foundUser.password) {
+      return res.status(403).send("password is incorrect")
+    } else {
+      res.cookie("user_id", foundUser.id);
+      return res.redirect("/urls");
+    }
+  }
+  return res.status(403).send("email cannot be found")
 });
 
 app.post(`/urls/:id/delete`, (req, res) => {
-delete urlDatabase[req.params.id];
-res.redirect("/urls");
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
 });
 
 app.post("/urls", (req, res) => {
@@ -104,21 +113,21 @@ app.post("/urls", (req, res) => {
   const shortUrlId = getshortUrlId();
   urlDatabase[shortUrlId] = req.body.longURL;
   // console.log(urlDatabase);
-  res.redirect(`/urls/${shortUrlId}`); 
+  res.redirect(`/urls/${shortUrlId}`);
 
 });
 app.post("/urls/:id", (req, res) => {
   // console.log(req.params);
   // console.log(req.body);
   urlDatabase[req.params.id] = req.body.longURL;
- 
-  res.redirect("/urls"); 
+
+  res.redirect("/urls");
 
 });
 
 app.post("/logout", (req, res) => {
-res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.clearCookie("user_id");
+  res.redirect("/login");
 });
 
 app.get("/urls/new", (req, res) => {
@@ -142,7 +151,7 @@ app.get("/u/:id", (req, res) => {
   const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
   const longURL = urlDatabase[req.params.id];
   // console.log(longURL);
-  
+
   res.redirect(longURL);
 });
 

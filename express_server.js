@@ -24,9 +24,20 @@ const getUserbyEmail = (email) => {
   }
 }
 
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -120,17 +131,20 @@ app.post("/urls", (req, res) => {
   if (!userDetails) {
     return res.status(401).send("please register to access Create New URL")
   }
-
+console.log("test this thing", req.body);
   const shortUrlId = getshortUrlId();
-  urlDatabase[shortUrlId] = req.body.longURL;
+  urlDatabase[shortUrlId] = {
+    longURL: req.body.longURL,
+    userID: userDetails.id
+  }
   // console.log(urlDatabase);
   res.redirect(`/urls/${shortUrlId}`);
 
 });
 app.post("/urls/:id", (req, res) => {
-  // console.log(req.params);
-  // console.log(req.body);
-  urlDatabase[req.params.id] = req.body.longURL;
+  console.log("test urls id req.prams", req.params);
+  console.log("test urls id req.body", req.body);
+  urlDatabase[req.params.id] ={ longURL: req.body.longURL };
 
   res.redirect("/urls");
 
@@ -165,14 +179,14 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const userDetails = users[req.cookies["user_id"]];
   // console.log("typeof check", typeof userDetails);
-  console.log("check req params", req.params);
-  console.log("userDetails", userDetails);
+  // console.log("check req params", req.params);
+  // console.log("userDetails", userDetails);
   if (req.params.id === "undefined") {
     return res.status(404).send("short URL not found")
   }
   
   const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
-  const longURL = urlDatabase[req.params.id];
+  const longURL = urlDatabase[req.params.id].longURL;
   // console.log(longURL);
 
   res.redirect(longURL);

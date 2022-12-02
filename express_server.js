@@ -3,6 +3,8 @@ const morgan = require("morgan");
 const app = express();
 const PORT = 8080; // default port 8080
 const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
+
 
 app.set("view engine", "ejs");
 app.use(morgan("dev"));
@@ -50,6 +52,8 @@ const urlDatabase = {
     userID: "aJ48lW",
   },
 };
+const passwordUser2 = "aa";
+const user2HashedPassword = bcrypt.hashSync(passwordUser2, 10);
 
 const users = {
   userRandomID: {
@@ -62,6 +66,12 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk",
   },
+
+  "4ljtye": {
+    id: '4ljtye',
+    email: 'neo@gmail.com',
+    password: '$2a$10$LQN2WVqXcTupAhhOdEwyoOxKgPx/DxPYBl7aA5e181kpo/Aam3wDO'
+  }
 };
 
 app.get("/", (req, res) => {
@@ -89,7 +99,7 @@ app.get("/urls", (req, res) => {
   // }   
 
   // console.log(urlsForUser(userDetails));
- 
+
   res.render("urls_index", templateVars);
 });
 
@@ -105,6 +115,8 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   // const userId = req.cookies.user_id;
   const newUserId = getnewUserId();
+  const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10)
 
   if (req.body.email === "" || req.body.password === "") {
     return res.status(400).send("need to input email and password");
@@ -116,9 +128,10 @@ app.post("/register", (req, res) => {
   }
 
   res.cookie("user_id", newUserId);
-  const { email, password } = req.body;
-  const user = { id: newUserId, email: req.body.email, password: req.body.password }
+  // const { email, password } = req.body;
+  const user = { id: newUserId, email: req.body.email, password: hashedPassword }
   users[newUserId] = user
+  // console.log("test users", users);
 
   // console.log(res.cookie);
   res.redirect("/urls");
@@ -134,10 +147,16 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+  const password = req.body.password;
+  const userEmail = req.body.email;
+  let foundUser = getUserbyEmail(userEmail);
+  
+  const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
 
-  let foundUser = getUserbyEmail(req.body.email);
+  console.log("foundUser", foundUser);
+  console.log("password", password);
   if (foundUser) {
-    if (req.body.password !== foundUser.password) {
+    if (!isPasswordCorrect) {
       return res.status(403).send("password is incorrect")
     } else {
       res.cookie("user_id", foundUser.id);
@@ -172,9 +191,9 @@ app.post("/urls", (req, res) => {
 
 });
 app.post("/urls/:id", (req, res) => {
-  console.log("test line 171", urlDatabase[req.params.id]);
-  console.log("test line 172", { longURL: req.body.longURL });
-  urlDatabase[req.params.id].longURL = req.body.longURL; 
+  // console.log("test line 171", urlDatabase[req.params.id]);
+  // console.log("test line 172", { longURL: req.body.longURL });
+  urlDatabase[req.params.id].longURL = req.body.longURL;
 
   res.redirect("/urls");
 
@@ -201,8 +220,8 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const userDetails = (users[req.cookies["user_id"]]);
-// console.log("userid test", urlDatabase[req.params.id].userID);
-// console.log("userDetails test", userDetails.id);
+  // console.log("userid test", urlDatabase[req.params.id].userID);
+  // console.log("userDetails test", userDetails.id);
   if (!userDetails) {
     return res.status(401).send('Unable to access. login first to see URLs')
   }

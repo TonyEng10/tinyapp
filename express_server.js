@@ -16,20 +16,12 @@ app.use(cookieSession({
   keys: ["user_id"]
 }));
 
+const getUserbyEmail = require("./helpers.js");
 
 let getshortUrlId = () => Math.random().toString(36).substring(2, 8);
 const getnewUserId = () => Math.random().toString(36).substring(2, 8);
 
-const getUserbyEmail = (email) => {
-  // let foundUser = null;
 
-  for (const userId in users) {
-    const user = users[userId];
-    if (user.email === email) {
-      return user;
-    }
-  }
-}
 
 // const urlDatabase = {
 //   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -61,18 +53,15 @@ const urlDatabase = {
 // const user2HashedPassword = bcrypt.hashSync(passwordUser2, 10);
 
 const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "a@a.a",
-    password: "a",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
+  
 
-  "4ljtye": {
+  'm75t54': {
+    id: 'm75t54',
+    email: '123@123.com',
+    password: '$2a$10$bZzqDIZ5HuO5.q2DzaTBXuW3bzUD66TakpcJXj07AKqxP5jhojKta'
+  },
+  
+  '4ljtye': {
     id: '4ljtye',
     email: 'neo@gmail.com',
     password: '$2a$10$LQN2WVqXcTupAhhOdEwyoOxKgPx/DxPYBl7aA5e181kpo/Aam3wDO'
@@ -127,7 +116,7 @@ app.post("/register", (req, res) => {
     return res.status(400).send("need to input email and password");
   }
 
-  let foundUser = getUserbyEmail(req.body.email);
+  let foundUser = getUserbyEmail(req.body.email, users);
   if (foundUser) {
     return res.status(400).send("user already exists");
   }
@@ -154,8 +143,8 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const password = req.body.password;
   const userEmail = req.body.email;
-  let foundUser = getUserbyEmail(userEmail);
-  
+  const foundUser = getUserbyEmail(userEmail, users);
+  // console.log("foundUser", foundUser);
   const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
 
   // console.log("foundUser", foundUser);

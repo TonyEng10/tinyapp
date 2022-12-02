@@ -114,9 +114,14 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   const userEmail = req.body.email;
   const foundUser = getUserbyEmail(userEmail, users);
-  const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
-
+  if (req.body.email === "" || req.body.password === "") {
+    return res.status(400).send("need to input email and password");
+  }
+  if (!foundUser) {
+    return res.status(403).send("email cannot be found");
+  }
   if (foundUser) {
+    const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
     if (!isPasswordCorrect) {
       return res.status(403).send("password is incorrect");
     } else {
@@ -124,7 +129,6 @@ app.post("/login", (req, res) => {
       return res.redirect("/urls");
     }
   }
-  return res.status(403).send("email cannot be found");
 });
 
 app.post(`/urls/:id/delete`, (req, res) => {
@@ -182,7 +186,8 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const userDetails = users[req.session["user_id"]];
-  if (req.params.id === "undefined") {
+
+  if (req.params.id === undefined) {
     return res.status(404).send("short URL not found");
   }
   const templateVars = { urls: urlDatabase, user: users[req.session["user_id"]] };

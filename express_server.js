@@ -64,15 +64,19 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const userDetails = (users[req.session["user_id"]]);
-
+  const templateVars2 = { user: users[req.session["user_id"]] };
   if (!userDetails) {
-    return res.status(401).send('unable to access. please register or login first');
+    res.render("urls_justheader", templateVars2);
   }
   const userOwnedURLs = urlsForUser(userDetails.id, urlDatabase);
   const templateVars = { urls: userOwnedURLs, user: users[req.session["user_id"]] };
-
   res.render("urls_index", templateVars);
 });
+
+app.get("/justheader", (req, res) => {
+  const templateVars = {user: users[req.session["user_id"]]}
+  res.render("urls_justheader", templateVars);
+})
 
 app.get("/register", (req, res) => {
   const userDetails = (users[req.session["user_id"]]);
@@ -133,7 +137,9 @@ app.post("/login", (req, res) => {
 
 app.post(`/urls/:id/delete`, (req, res) => {
   const userDetails = (users[req.session["user_id"]]);
-  if (!userDetails) {
+  console.log("urlDatabase[req.params.id]", urlDatabase[req.params.id]);
+  console.log('users[req.session["user_id"]', users[req.session["user_id"]]);
+  if (urlDatabase[req.params.id].userID !== userDetails.id) {
     return res.status(401).send('unable to delete URL that is not yours');
   }
   delete urlDatabase[req.params.id];
@@ -154,6 +160,10 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
+  const userDetails = (users[req.session["user_id"]]);
+  if (urlDatabase[req.params.id].userID !== userDetails.id) {
+    return res.status(401).send('unable to modify urls unless logged in');
+  }
   urlDatabase[req.params.id].longURL = req.body.longURL;
   res.redirect("/urls");
 });

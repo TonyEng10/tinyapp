@@ -90,7 +90,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const newUserId = getnewUserId();
   const password = req.body.password;
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const hashedPassword = bcrypt.hashSync(password, 10);//encrypting password with bcrypt
 
   if (req.body.email === "" || req.body.password === "") {
     return res.status(400).send("need to input email and password");
@@ -201,7 +201,7 @@ app.get("/u/:id", (req, res) => {
 
   if (req.params.id === undefined) {
     return res.status(404).send("short URL not found");
-  }
+  } 
   const templateVars = { urls: urlDatabase, user: users[req.session["user_id"]] };
   const longURL = urlDatabase[req.params.id].longURL;
   res.redirect(longURL);

@@ -197,12 +197,9 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  const userDetails = users[req.session["user_id"]];
-
   if (req.params.id === undefined) {
     return res.status(404).send("short URL not found");
   } 
-  const templateVars = { urls: urlDatabase, user: users[req.session["user_id"]] };
   const longURL = urlDatabase[req.params.id].longURL;
   res.redirect(longURL);
 });

@@ -80,10 +80,11 @@ app.get("/justheader", (req, res) => {
 
 app.get("/register", (req, res) => {
   const userDetails = (users[req.session["user_id"]]);
+  const templateVars = { user: users[req.session["user_id"]] };
   if (userDetails) {
     return res.redirect("/urls");
   } else
-    res.render("urls_register");
+    res.render("urls_register", templateVars);
 });
 
 app.post("/register", (req, res) => {
@@ -108,10 +109,11 @@ app.post("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   const userDetails = (users[req.session.user_id]);
+  const templateVars = { user: users[req.session["user_id"]] }
   if (userDetails) {
     return res.redirect("/urls");
   } else
-    return res.render("urls_login");
+    return res.render("urls_login", templateVars);
 });
 
 app.post("/login", (req, res) => {
